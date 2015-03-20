@@ -520,8 +520,7 @@ namespace Sub_Data_Dump
             saveFileDialog1.RestoreDirectory = true;
 
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                //this.textBox1.Text = dlg.FileName;
+            {                
                 this.textBox5.Text = saveFileDialog1.FileName;
                 string save_file = saveFileDialog1.FileName;
                 try
@@ -529,16 +528,17 @@ namespace Sub_Data_Dump
                     StreamWriter sw = new StreamWriter(this.textBox5.Text);
                     string head = "Mobile_No|Name|Father's_Name|Address|Activation_Date|POI_No|POA_No|POS_Code|TSP";
                     string qry = this.textBox3.Text.ToString();
-                    //qry = "select " + data2;
+                    
+
                     string s1 = "Data Source=" + this.textBox1.Text;
-                    //count_Rows();                   
-                    //string conn = "Provider=Microsoft.Jet.OLEDB.4.0;" + s1;
+                    
+
                     OleDbConnection con = new OleDbConnection(conn + s1);
                     try
                     {
                         con.Open();
-                        sw.WriteLine(head);
-                        //qry = "select top 5 * from " + "[" + this.listBox1.SelectedItem.ToString() + "]";
+                        sw.WriteLine(head);                      
+
                         DataSet mydataset = new DataSet();
                         OleDbCommand cmd = new OleDbCommand(qry, con);
                         OleDbDataAdapter ada = new OleDbDataAdapter(cmd);
@@ -566,7 +566,7 @@ namespace Sub_Data_Dump
                         }
                         this.textBox2.Text = "Dumping Complete";
                         con.Close();
-                        //this.button5.Enabled = true;
+                        
                     }
                     catch (Exception ex)
                     {
