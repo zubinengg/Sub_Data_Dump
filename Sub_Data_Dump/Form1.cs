@@ -522,10 +522,11 @@ namespace Sub_Data_Dump
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 //this.textBox1.Text = dlg.FileName;
-                //this.textBox3.Text = saveFileDialog1.FileName;
+                this.textBox5.Text = saveFileDialog1.FileName;
+                string save_file = saveFileDialog1.FileName;
                 try
                 {
-                    StreamWriter sw = new StreamWriter(this.textBox3.Text);
+                    StreamWriter sw = new StreamWriter(this.textBox5.Text);
                     string head = "Mobile_No|Name|Father's_Name|Address|Activation_Date|POI_No|POA_No|POS_Code|TSP";
                     string qry = this.textBox3.Text.ToString();
                     //qry = "select " + data2;
