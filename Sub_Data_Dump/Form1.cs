@@ -562,8 +562,7 @@ namespace Sub_Data_Dump
                             sw.WriteLine(data + tail);
                             x += 1;
                             progressBar1.Value = Convert.ToInt16(Convert.ToDouble(x) / divder * 100);
-
-                            //this.richTextBox2.Text = data + "\n" + this.richTextBox2.Text;
+                            
                         }
                         this.textBox2.Text = "Dumping Complete";
                         con.Close();
