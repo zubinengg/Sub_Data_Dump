@@ -63,18 +63,17 @@ namespace Sub_Data_Dump
         {
             string s1 = "Data Source=" + this.textBox1.Text;
             //string conn = "Provider=Microsoft.Jet.OLEDB.4.0;" + s1;
-            OleDbConnection con = new OleDbConnection(conn + s1);
-            string qry = "select count(*) as rec_count from [" + this.listBox1.SelectedItem.ToString() + "]";
+            //OleDbConnection con = new OleDbConnection(conn + s1);
+            string qry = "select count(*) from [" + this.listBox1.SelectedItem.ToString() + "]";
             //this.richTextBox1.Text = qry;
             try
             {
-                con.Open();
-                OleDbCommand cmd = new OleDbCommand(qry, con);
-                OleDbDataReader reader = cmd.ExecuteReader();
-                if (reader.Read() == true)
+                using (OleDbConnection conn1 = new OleDbConnection(conn + s1))
+                using (OleDbCommand command = new OleDbCommand(qry, conn1))
                 {
-                    this.textBox4.Text = reader["rec_count"].ToString();
-                    //count = reader["rec_count"];
+                    conn1.Open();
+                    int count = (int)command.ExecuteScalar();
+                    this.textBox4.Text = count.ToString();
                 }
             }
             catch
@@ -510,7 +509,9 @@ namespace Sub_Data_Dump
                 this.textBox2.Text += "Failed to Test Query!!!!!!!!!!!!!!\n";
             }
         }
+        # region Bgworker_Dump
 
+        #endregion
         private void dump_query()
         {
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
@@ -520,7 +521,7 @@ namespace Sub_Data_Dump
             saveFileDialog1.RestoreDirectory = true;
 
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
-            {                
+            {
                 this.textBox5.Text = saveFileDialog1.FileName;
                 string save_file = saveFileDialog1.FileName;
                 try
@@ -528,16 +529,16 @@ namespace Sub_Data_Dump
                     StreamWriter sw = new StreamWriter(this.textBox5.Text);
                     string head = "Mobile_No|Name|Father's_Name|Address|Activation_Date|POI_No|POA_No|POS_Code|TSP";
                     string qry = this.textBox3.Text.ToString();
-                    
+
 
                     string s1 = "Data Source=" + this.textBox1.Text;
-                    
+
 
                     OleDbConnection con = new OleDbConnection(conn + s1);
                     try
                     {
                         con.Open();
-                        sw.WriteLine(head);                      
+                        sw.WriteLine(head);
 
                         DataSet mydataset = new DataSet();
                         OleDbCommand cmd = new OleDbCommand(qry, con);
@@ -562,11 +563,11 @@ namespace Sub_Data_Dump
                             sw.WriteLine(data + tail);
                             x += 1;
                             progressBar1.Value = Convert.ToInt16(Convert.ToDouble(x) / divder * 100);
-                            
+
                         }
                         this.textBox2.Text = "Dumping Complete";
                         con.Close();
-                        
+
                     }
                     catch (Exception ex)
                     {
@@ -587,6 +588,11 @@ namespace Sub_Data_Dump
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
         {
 
         }
