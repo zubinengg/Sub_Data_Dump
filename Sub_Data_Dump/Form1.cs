@@ -510,20 +510,12 @@ namespace Sub_Data_Dump
             }
         }
         # region Bgworker_Dump
-
-        #endregion
-        private void dump_query()
+        private int dump_query(string fileName)
         {
-            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
             Int64 x2 = Convert.ToInt64(this.textBox4.Text.ToString());
-            saveFileDialog1.Filter = "txt files (*.txt)|*.txt";
-            saveFileDialog1.FilterIndex = 2;
-            saveFileDialog1.RestoreDirectory = true;
-
-            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                this.textBox5.Text = saveFileDialog1.FileName;
-                string save_file = saveFileDialog1.FileName;
+                textBox5.Invoke((MethodInvoker)delegate { this.textBox5.Text = fileName; });
+                string save_file = fileName;
                 try
                 {
                     StreamWriter sw = new StreamWriter(this.textBox5.Text);
@@ -539,6 +531,8 @@ namespace Sub_Data_Dump
                     {
                         con.Open();
                         sw.WriteLine(head);
+                        string tail="";
+                        comboBox1.Invoke((MethodInvoker)delegate { tail = "|" + comboBox1.SelectedItem.ToString(); });
 
                         DataSet mydataset = new DataSet();
                         OleDbCommand cmd = new OleDbCommand(qry, con);
@@ -558,33 +552,80 @@ namespace Sub_Data_Dump
                                 }
                                 data += reader.GetValue(i).ToString();
                             }
-                            string tail = "|" + comboBox1.SelectedItem.ToString();
+                            //string tail = "|" + comboBox1.SelectedItem.ToString();
                             data = NormalizeWhiteSpace(data);
                             sw.WriteLine(data + tail);
                             x += 1;
-                            progressBar1.Value = Convert.ToInt16(Convert.ToDouble(x) / divder * 100);
+                            progressBar1.Invoke((MethodInvoker)delegate { progressBar1.Value = Convert.ToInt16(Convert.ToDouble(x) / divder * 100); });
 
                         }
-                        this.textBox2.Text = "Dumping Complete";
+                        textBox2.Invoke((MethodInvoker)delegate { this.textBox2.Text = "Dumping Complete"; });
                         con.Close();
 
                     }
                     catch (Exception ex)
                     {
-                        this.textBox2.Text = "Failed to Dump data :=( " + ex.ToString();
+                        textBox2.Invoke((MethodInvoker)delegate { this.textBox2.Text = "Failed to Dump data :=( " + ex.ToString(); });
                     }
                     sw.Close();
                 }
                 catch
                 {
-                    this.textBox2.Text = "Something wrong";
+                    textBox2.Invoke((MethodInvoker)delegate { this.textBox2.Text = "Something wrong"; });
                 }
             }
+            return 0;
         }
+
+        void bgWorker_DoWork1_find(object sender, DoWorkEventArgs e)
+        {
+
+
+            // Filename to process was passed to RunWorkerAsync(), so it's available
+            // here in DoWorkEventArgs object.
+
+            string sFileToRead = (string)e.Argument;
+            e.Result = dump_query(sFileToRead);
+        }
+
+        void bgWorker_RunWorkerCompleted_find(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                MessageBox.Show(e.Error.Message);
+            }
+            else
+            {
+                int numLines = (int)e.Result;
+                label2.Text = "Number of lines Found :" + numLines.ToString();
+                this.textBox2.ReadOnly = false;
+                //this.textBox4.Text = numLines.ToString();
+            }
+        }
+        #endregion
+
 
         private void button4_Click(object sender, EventArgs e)
         {
-            dump_query();
+            //dump_query();
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            Int64 x2 = Convert.ToInt64(this.textBox4.Text.ToString());
+            saveFileDialog1.Filter = "txt files (*.txt)|*.txt";
+            saveFileDialog1.FilterIndex = 2;
+            saveFileDialog1.RestoreDirectory = true;
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+
+                BackgroundWorker bgWorker;
+                bgWorker = new BackgroundWorker();
+                bgWorker.DoWork += new DoWorkEventHandler(bgWorker_DoWork1_find);
+                bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bgWorker_RunWorkerCompleted_find);
+
+                // Launch background thread to do the work of reading the file.  This will
+                // trigger BackgroundWorker.DoWork().  Note that we pass the filename to
+                // process as a param
+                bgWorker.RunWorkerAsync(saveFileDialog1.FileName.ToString());
+            }
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
