@@ -66,6 +66,7 @@
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.textBox5 = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.SuspendLayout();
@@ -380,7 +381,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(618, 358);
+            this.button3.Location = new System.Drawing.Point(589, 358);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(106, 23);
             this.button3.TabIndex = 33;
@@ -390,9 +391,9 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(754, 358);
+            this.button4.Location = new System.Drawing.Point(701, 358);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(190, 23);
+            this.button4.Size = new System.Drawing.Size(168, 23);
             this.button4.TabIndex = 34;
             this.button4.Text = "Dump Query Result in Txt File";
             this.button4.UseVisualStyleBackColor = true;
@@ -430,12 +431,23 @@
             this.textBox5.ReadOnly = true;
             this.textBox5.Size = new System.Drawing.Size(130, 57);
             this.textBox5.TabIndex = 38;
+            this.textBox5.TextChanged += new System.EventHandler(this.textBox5_TextChanged);
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(875, 363);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(34, 13);
+            this.label15.TabIndex = 39;
+            this.label15.Text = "Fields";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(969, 493);
+            this.Controls.Add(this.label15);
             this.Controls.Add(this.textBox5);
             this.Controls.Add(this.textBox4);
             this.Controls.Add(this.progressBar1);
@@ -524,6 +536,7 @@
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.TextBox textBox5;
+        private System.Windows.Forms.Label label15;
     }
 }
 

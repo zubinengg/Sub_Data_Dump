@@ -510,89 +510,131 @@ namespace Sub_Data_Dump
             }
         }
         # region Bgworker_Dump
-        public int ReadTheTable(string fileName,string tableName,string opFileName)
+        private int dump_query(string fileName)
         {
-            int numLines = 0;
+            Int64 x2 = Convert.ToInt64(this.textBox4.Text.ToString());
 
-            
+            textBox5.Invoke((MethodInvoker)delegate { this.textBox5.Text = fileName; });
+            string save_file = fileName;
+            try
+            {
+                StreamWriter sw = new StreamWriter(this.textBox5.Text);
+                string head = "Mobile_No|Name|Father's_Name|Address|Activation_Date|POI_No|POA_No|POS_Code|TSP";
+                string qry = this.textBox3.Text.ToString();
+                //qry = qry.Remove("top 5");
+                string removeString = "top 5";
 
-            return numLines;
+                int index = qry.IndexOf(removeString);
+                qry = (index < 0)
+                    ? qry
+                    : qry.Remove(index, removeString.Length);
+
+                string s1 = "Data Source=" + this.textBox1.Text;
+
+
+                OleDbConnection con = new OleDbConnection(conn + s1);
+                try
+                {
+                    con.Open();
+                    sw.WriteLine(head);
+                    string tail = "";
+                    comboBox1.Invoke((MethodInvoker)delegate { tail = "|" + comboBox1.SelectedItem.ToString(); });
+
+                    DataSet mydataset = new DataSet();
+                    OleDbCommand cmd = new OleDbCommand(qry, con);
+                    OleDbDataAdapter ada = new OleDbDataAdapter(cmd);
+                    OleDbDataReader reader = cmd.ExecuteReader();
+                    Int64 x = 0;
+                    //double bar = 0;
+                    double divder = Convert.ToDouble(x2);
+                    while (reader.Read())
+                    {
+                        string data = "";
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            if (i > 0)
+                            {
+                                data += "|";
+                            }
+                            data += reader.GetValue(i).ToString();
+                        }
+                        //string tail = "|" + comboBox1.SelectedItem.ToString();
+                        data = NormalizeWhiteSpace(data);
+                        sw.WriteLine(data + tail);
+                        x += 1;
+                        if (x % 10000 == 0 || x == divder)
+                        {
+                            label15.Invoke((MethodInvoker)delegate { this.label15.Text = x.ToString(); });
+                            progressBar1.Invoke((MethodInvoker)delegate { progressBar1.Value = Convert.ToInt16(Convert.ToDouble(x) / divder * 100); });
+                        }
+                    }
+                    textBox2.Invoke((MethodInvoker)delegate { this.textBox2.Text = "Dumping Complete"; });
+                    con.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    textBox2.Invoke((MethodInvoker)delegate { this.textBox2.Text = "Failed to Dump data :=( " + ex.ToString(); });
+                }
+                sw.Close();
+            }
+            catch
+            {
+                textBox2.Invoke((MethodInvoker)delegate { this.textBox2.Text = "Something wrong"; });
+            }
+
+            return 0;
         }
 
-        #endregion
-        private void dump_query()
+        void bgWorker_DoWork1_find(object sender, DoWorkEventArgs e)
         {
+
+
+            // Filename to process was passed to RunWorkerAsync(), so it's available
+            // here in DoWorkEventArgs object.
+
+            string sFileToRead = (string)e.Argument;
+            e.Result = dump_query(sFileToRead);
+        }
+
+        void bgWorker_RunWorkerCompleted_find(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                MessageBox.Show(e.Error.Message);
+            }
+            else
+            {
+                int numLines = (int)e.Result;
+                //label2.Text = "Number of lines Found :" + numLines.ToString();
+                //this.textBox2.ReadOnly = false;
+                //this.textBox4.Text = numLines.ToString();
+            }
+        }
+        #endregion
+
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            //dump_query();
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
             Int64 x2 = Convert.ToInt64(this.textBox4.Text.ToString());
             saveFileDialog1.Filter = "txt files (*.txt)|*.txt";
             saveFileDialog1.FilterIndex = 2;
             saveFileDialog1.RestoreDirectory = true;
-
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                this.textBox5.Text = saveFileDialog1.FileName;
-                string save_file = saveFileDialog1.FileName;
-                try
-                {
-                    StreamWriter sw = new StreamWriter(this.textBox5.Text);
-                    string head = "Mobile_No|Name|Father's_Name|Address|Activation_Date|POI_No|POA_No|POS_Code|TSP";
-                    string qry = this.textBox3.Text.ToString();
 
+                BackgroundWorker bgWorker;
+                bgWorker = new BackgroundWorker();
+                bgWorker.DoWork += new DoWorkEventHandler(bgWorker_DoWork1_find);
+                bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bgWorker_RunWorkerCompleted_find);
 
-                    string s1 = "Data Source=" + this.textBox1.Text;
-
-
-                    OleDbConnection con = new OleDbConnection(conn + s1);
-                    try
-                    {
-                        con.Open();
-                        sw.WriteLine(head);
-
-                        DataSet mydataset = new DataSet();
-                        OleDbCommand cmd = new OleDbCommand(qry, con);
-                        OleDbDataAdapter ada = new OleDbDataAdapter(cmd);
-                        OleDbDataReader reader = cmd.ExecuteReader();
-                        Int64 x = 0;
-                        double bar = 0;
-                        double divder = Convert.ToDouble(x2);
-                        while (reader.Read())
-                        {
-                            string data = "";
-                            for (int i = 0; i < reader.FieldCount; i++)
-                            {
-                                if (i > 0)
-                                {
-                                    data += "|";
-                                }
-                                data += reader.GetValue(i).ToString();
-                            }
-                            string tail = "|" + comboBox1.SelectedItem.ToString();
-                            data = NormalizeWhiteSpace(data);
-                            sw.WriteLine(data + tail);
-                            x += 1;
-                            progressBar1.Value = Convert.ToInt16(Convert.ToDouble(x) / divder * 100);
-
-                        }
-                        this.textBox2.Text = "Dumping Complete";
-                        con.Close();
-
-                    }
-                    catch (Exception ex)
-                    {
-                        this.textBox2.Text = "Failed to Dump data :=( " + ex.ToString();
-                    }
-                    sw.Close();
-                }
-                catch
-                {
-                    this.textBox2.Text = "Something wrong";
-                }
+                // Launch background thread to do the work of reading the file.  This will
+                // trigger BackgroundWorker.DoWork().  Note that we pass the filename to
+                // process as a param
+                bgWorker.RunWorkerAsync(saveFileDialog1.FileName.ToString());
             }
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            dump_query();
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
@@ -601,6 +643,11 @@ namespace Sub_Data_Dump
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox5_TextChanged(object sender, EventArgs e)
         {
 
         }
