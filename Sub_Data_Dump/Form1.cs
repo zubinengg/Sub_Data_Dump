@@ -510,6 +510,14 @@ namespace Sub_Data_Dump
             }
         }
         # region Bgworker_Dump
+        public int ReadTheTable(string fileName,string tableName,string opFileName)
+        {
+            int numLines = 0;
+
+            
+
+            return numLines;
+        }
 
         #endregion
         private void dump_query()
