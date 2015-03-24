@@ -503,7 +503,7 @@ namespace Sub_Data_Dump
                 ada.Fill(t);
                 dataGridView2.DataSource = t.DefaultView;
                 con.Close();
-                this.button4.Enabled = true;
+                //this.button4.Enabled = true;
             }
             catch
             {
@@ -676,6 +676,11 @@ namespace Sub_Data_Dump
             listClear();
             this.listBox1.Items.Clear();
 
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            this.button4.Enabled = true;
         }
     }
 }
