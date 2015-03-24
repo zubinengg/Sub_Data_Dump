@@ -32,6 +32,8 @@ namespace Sub_Data_Dump
         }
         public void get_tables()
         {
+            this.listBox1.Items.Clear();
+            this.listBox2.Items.Clear();
             string s1 = "Data Source=" + this.textBox1.Text;
             if (this.textBox1.Text.Contains(".accdb"))
             {
