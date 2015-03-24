@@ -186,6 +186,7 @@ namespace Sub_Data_Dump
                 ada.Fill(t);
                 dataGridView1.DataSource = t.DefaultView;
                 con.Close();
+                // Bgworker
                 count_Rows();
             }
             catch
@@ -649,6 +650,31 @@ namespace Sub_Data_Dump
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
+
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            this.textBox1.Text = "";
+            this.textBox2.Text = "";
+            this.textBox3.Text = "";
+            this.textBox4.Text = "";
+            this.textBox5.Text = "";
+            this.button3.Enabled = false;
+            this.button4.Enabled = false;
+            this.label15.Text = "0";
+
+            this.dataGridView1.DataSource = null;
+            dataGridView1.Rows.Clear();
+            dataGridView1.Refresh();
+            this.dataGridView2.DataSource = null;
+            dataGridView2.Rows.Clear();
+            dataGridView2.Refresh();
+
+
+
+            listClear();
+            this.listBox1.Items.Clear();
 
         }
     }
