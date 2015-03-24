@@ -154,7 +154,8 @@ namespace Sub_Data_Dump
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            listClear();
+            //listClear();
+            this.listBox2.Items.Clear();
             string s1 = "Data Source=" + this.textBox1.Text;
             OleDbConnection con = new OleDbConnection(conn + s1);
             try
